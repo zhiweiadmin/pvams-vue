@@ -93,7 +93,7 @@
                     </el-dialog> -->
                     <el-upload
                         name="file"
-                        action="/pvams/upload"
+                        :action="`/pvams/station/uploadAccessPointFile/${stationId}/${index1+1}`"
                         list-type="picture"
                         :on-preview="handlePictureCardPreview"
                         :on-remove="handleRemove"
