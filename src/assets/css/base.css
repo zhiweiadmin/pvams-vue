@@ -1,0 +1,175 @@
+/* css reset */
+
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+code,
+form,
+fieldset,
+legend,
+input,
+button,
+textarea,
+p,
+blockquote,
+th,
+td,
+section,
+article,
+aside,
+header,
+footer,
+nav,
+dialog,
+figure,
+hgroup {
+  margin: 0;
+  padding: 0
+}
+
+input,
+select,
+textarea {
+  font-size: 100%
+}
+
+fieldset,
+img {
+  border: 0
+}
+
+caption,
+th {
+  text-align: left
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+  font-weight: 500
+}
+
+ul,
+ol,
+li {
+  list-style: none
+}
+
+em,
+i {
+  font-style: normal
+}
+
+del {
+  text-decoration: line-through
+}
+
+address,
+caption,
+cite,
+code,
+dfn,
+em,
+th,
+var {
+  font-style: normal;
+  font-weight: 500
+}
+
+img {
+  border: 0;
+  max-width: 100%
+}
+
+input,
+img {
+  vertical-align: middle
+}
+
+input:focus,
+a:focus {
+  outline: 0
+}
+
+input:hover {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-modify: read-write-plaintext-only
+}
+
+a {
+  color: #333;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  text-decoration: none;
+  color: currentColor;
+}
+
+* {
+  outline: 0;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+.hide {
+  display: none
+}
+
+.clearfix {
+  overflow: hidden;
+  zoom: 1
+}
+
+/* css base */
+.wrapper {
+  font-family: MicrosoftYaHei;
+  font-size: 16px;
+  color: #444957;
+  position: relative;
+}
+
+.wrapper .panel {
+  overflow: hidden;
+  padding: 25px 20px;
+  background-color: #fff;
+  box-shadow: 0 1px 1px 0 rgba(204, 204, 204, 0.50);
+  min-height: calc(100vh - 70px);
+}
+
+.wrapper .search-contain {
+  display: block;
+  padding: 15px 0 0 15px;
+  background-color: rgb(236, 245, 255);
+  margin-bottom: 40px;
+  border: 1px solid #ebeef5;
+}
+
+.wrapper .panel-page {
+  padding: 20px 0;
+  text-align: right;
+}
+
+.wrapper .operation-btn {
+  margin-bottom: 20px;
+}
