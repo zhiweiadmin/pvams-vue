@@ -110,6 +110,11 @@
             :label="col.label"
             :width="col.width">
           </el-table-column>
+          <el-table-column align="center" label="文件" >
+            <template slot-scope="scope">
+                <a class="style-pdf" target="view_window" :href="hostname + scope.row.filePath">{{scope.row.attach || ""}}</a>
+            </template>
+          </el-table-column>
           <el-table-column align="center" label="操作" >
             <template slot-scope="scope">
               <el-button size="small" type="text">
@@ -172,6 +177,7 @@ export default {
     return {
       time: "",
       isVisibleAdd: false,
+      hostname: "",
       columns: [
         {
           prop: "typeName",
@@ -187,11 +193,6 @@ export default {
           prop: "recordDesc",
           label: "工作描述",
           width: "400px",
-        },
-        {
-          prop: "attach",
-          label: "附件图片",
-          width: "",
         },
         {
           prop: "createDttm",
@@ -222,6 +223,7 @@ export default {
     }
   },
   created() {
+    this.hostname = config.HOST.pvamsDomain || "";
     this.hostDomain = `${config.HOST.pvamsDomain}`;
     this.userId = localStorage.getItem("userId");
     this.realname = localStorage.getItem("realname");
@@ -409,6 +411,10 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+  .style-pdf {
+    color: #409EFF;
+    text-decoration: underline;
+  }
 .routinedata-mn {
   .echart {
     min-height: 250px;
