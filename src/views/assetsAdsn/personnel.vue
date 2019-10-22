@@ -64,23 +64,38 @@
             </el-form-item>
             <el-form-item label="证书：" prop="certificatePic" :rules="[{required: true, message: '请上传证书'}]">
               <div class="update-logo">
-                <div class="logos round-logo">
-                  <el-upload
-                    :action="actionUrl"
-                    :on-success="(res) => uploadSuccess(res, 'certificatePic')"
-                    :before-upload="beforeAvatarUpload">
-                    <i class="el-icon-plus"></i>
-                    <!-- <div class="btn-upload" size="small" type="primary">头像上传</div> -->
-                  </el-upload>
-                  <div class="logo-show-img">
-                    <img :src="addForm.certificatePic" alt="">
-                    <div class="cover-bcg"></div>
-                  </div>
-                <div class="pic-update">
-                  <p><span></span></p>
-                  <p> <span>图片格式支持JPG、PNG</span></p>
-                </div>
-              </div>
+<!--                <div class="logos round-logo">-->
+<!--                  <el-upload-->
+<!--                    list-type="picture"-->
+<!--                    :action="actionUrl"-->
+<!--                    :on-remove="handleRemove"-->
+<!--                    :on-success="(res) => uploadSuccess(res, 'certificatePic')"-->
+<!--                    :before-upload="beforeAvatarUpload"-->
+<!--                    :file-list="addForm.imgList">-->
+<!--                    <el-button size="small" type="primary">点击上传</el-button>-->
+<!--&lt;!&ndash;                    <i class="el-icon-plus"></i>&ndash;&gt;-->
+<!--                    &lt;!&ndash; <div class="btn-upload" size="small" type="primary">头像上传</div> &ndash;&gt;-->
+<!--                  </el-upload>-->
+<!--&lt;!&ndash;                  <div class="logo-show-img">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <img :src="addForm.certificatePic" alt="">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <div class="cover-bcg"></div>&ndash;&gt;-->
+<!--&lt;!&ndash;                  </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="pic-update">&ndash;&gt;-->
+<!--&lt;!&ndash;                  <p><span></span></p>&ndash;&gt;-->
+<!--&lt;!&ndash;                  <p> <span>图片格式支持JPG、PNG</span></p>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--              </div>-->
+                <el-upload
+                        list-type="picture"
+                        :action="actionUrl"
+                        :on-remove="handleRemove"
+                        :on-success="(res) => uploadSuccess(res, 'certificatePic')"
+                        :before-upload="beforeAvatarUpload"
+                        :file-list="addForm.imgList">
+                  <el-button size="small" type="primary">点击上传</el-button>
+                  <!--                    <i class="el-icon-plus"></i>-->
+                  <!-- <div class="btn-upload" size="small" type="primary">头像上传</div> -->
+                </el-upload>
             </div>
             </el-form-item>
             <el-form-item label="头像：" prop="userPic" :rules="[{required: true, message: '请上传头像'}]">
@@ -93,6 +108,7 @@
                     <i class="el-icon-plus"></i>
                     <!-- <div class="btn-upload" size="small" type="primary">头像上传</div> -->
                   </el-upload>
+
                   <div class="logo-show-img">
                     <img :src="addForm.userPic" alt="">
                     <div class="cover-bcg"></div>
@@ -144,6 +160,8 @@ export default {
         credential: "",
         certificatePic: "",
         userPic: "",
+        fileList:[],
+        imgList:[]
       },
     }
   },
@@ -217,21 +235,48 @@ export default {
       this.$nextTick(() => {
         this.$refs[formName].resetFields();
       });
+      this.addForm.imgList = [];
+      this.addForm.fileList = [];
     },
     clickCancel(formName) {
       this.isVisibleAdd = false;
+      this.addForm = {};
+      this.addForm.imgList = [];
+      this.addForm.fileList = [];
     },
     clickEdit(row) {
       this.isVisibleAdd = true;
       this.addForm = {...row};
+      this.addForm.fileList = row.fileList;
+      console.log(this.addForm.fileList)
     },
     clickShowImg(img) {
       const imgSrc = img.indexOf('http://') === 0 ? img : `${this.hostname}${img}`
       this.isVisibleImg = true;
       this.showImg = imgSrc || "";
     },
+    handleRemove(file) {
+      console.log(file)
+
+      const url = file.response.data;
+      for(let i=0; i<this.addForm.fileList.length; i++){
+        const tmpUrl = this.addForm.fileList[i];
+        if (url === tmpUrl){
+          this.addForm.fileList.splice(i,1);
+        }
+      }
+      console.log(this.addForm.fileList)
+    },
     /* 上传成功 */
     uploadSuccess(res, img) {
+      if (res.code === 200 && img === 'certificatePic') {
+        const { data } = res;
+        if (this.addForm && !this.addForm.fileList) {
+          this.addForm.fileList = [];
+        }
+        this.addForm.fileList.push(data);
+        console.log(this.addForm.fileList);
+      }
       this.$set(this.addForm, img, config.HOST.pvamsDomain + res.data);
     },
     // 上传前校验
