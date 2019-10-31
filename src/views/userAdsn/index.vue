@@ -125,9 +125,7 @@
           </el-form-item>
           <el-form-item label="角色：" prop="role" :rules="[{required: true, message: '请选择角色'}]">
             <el-select v-model="addUserform.role" placeholder="请选择角色">
-              <!-- <el-option v-if="getUserJurisdiction('AT03')" label="超级管理员" :value="1"></el-option> -->
               <el-option v-for="(item, index) in userTypeList"
-                v-if="!item.isNoShow"
                 :key="index"
                 :label="item.name"
                 :value="item.role">
@@ -211,6 +209,7 @@ export default {
         { label: '电站普通用户', value: 6 },
       ],
       userTypeList: [],
+      roleName : ""
     }
   },
   created() {
@@ -252,6 +251,25 @@ export default {
     },
   },
   methods: {
+
+    getRoleName(role){
+      if(role === 1){
+          return "超级管理员";
+      }else if(role === 2){
+          return "企业管理员";
+      }else if(role === 3){
+          return "企业运维人员";
+      }else if(role === 4){
+          return "企业普通用户";
+      }else if(role === 5){
+          return "电站管理员";
+      }else if(role === 6){
+          return "电站运维人员";
+      }else if(role === 7){
+          return "电站普通用户";
+      }
+    },
+
     // 用户列表
     async getDataList(pageNo) {
       this.loadingOpen();
@@ -273,10 +291,11 @@ export default {
       this.tableList = userList;
     },
     // 角色列表
-    async getRoleDataList(type = 0) {
+    async getRoleDataList(type = 0,username) {
       const params = {
         type,
         userType: this.queryUserType,
+        username:username
       };
       const { data: { data: { resultList = [] }, code } = {} } = await this.axios(`/pvams/user/getRole`, { params });
       if (code === 200) {
@@ -372,7 +391,7 @@ export default {
       });
     },
     clickUserUpdate(row, type) {
-      this.getRoleDataList(type);
+      this.getRoleDataList(type,row.username);
       this.addUserform = {...row}
       this.isUserUpdate = true;
       this.isVisibleAddUser = true;
