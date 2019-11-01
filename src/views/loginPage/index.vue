@@ -14,7 +14,28 @@
 						<el-input type="password" prefix-icon="el-icon-lock" :style="{width: '300px'}" placeholder="请输入密码" v-model="form.password"></el-input>
 					</el-form-item>
 					<el-form-item>
-						<el-button class="btn" :style="{width: '100%'}" type="primary" @click="checkLogin('form')">登录</el-button>
+						<el-row class="submitbtn" style="cursor:pointer" @click="checkLogin('form')">
+							<!-- <el-col :span="4"><span>123</span></el-col>
+							<el-col :span="16">
+								<el-button class="btn submitbtn" :style="{width: '100%'}" type="primary" @click="checkLogin('form')">登录</el-button>
+							</el-col>
+							<el-col :span="4"><span>123</span></el-col> -->
+							<div @click="checkLogin('form')">
+								<el-col :span="7">		
+									<div style="text-align:right">
+										<img src='../../assets/star.svg' style="width:16px;height:16px">
+									</div>
+								</el-col>
+								<el-col :span="10">
+									<div style= "width:100%;font-size:15px;font-weight:bold">登录</div>
+								</el-col>
+								<el-col :span="7">
+									<div style="text-align:left">
+										<img src='../../assets/star.svg' style="width:16px;height:16px">
+									</div>
+								</el-col>
+							</div>
+						</el-row>
 					</el-form-item>
 				</el-form>
 			</div>
@@ -94,8 +115,8 @@ export default {
 			.el-form {
 				padding: 70px;
 				padding-top: 100px;
-				min-height: 558px;
-				background: url(../../assets/login_bg2.png) no-repeat center center;
+				min-height: 450px;
+				background: url(../../assets/loginbg.svg) no-repeat center center;
 				background-size: 100% 100%;
 				.el-input {
 					font-size: 16px;
@@ -149,13 +170,15 @@ export default {
 			justify-content: flex-start;
 			align-items: center;
 			align-content: center;
-			padding-left: 60px;
 			font-size: 45px;
-			color: #D80000;
+			color: #014783;
 			animation: titlestate 1s 1 ease-out;
+			margin-top: 10%;
+    		margin-left: 26%;
 			// -webkit-animation: titlestate 1s 1;
 			h3 {
 				font-weight: 800;
+				text-shadow: 5px -5px 2px #C3CAEE;
 			}
 			img {
 				margin-top: 110px;
@@ -181,6 +204,9 @@ export default {
 			font-size: 16px;
 			font-weight: bold;
 			letter-spacing: 6px;
+		}
+		.submitbtn{
+			background:url('../../assets/submitbg.svg')
 		}
 	}
 }
