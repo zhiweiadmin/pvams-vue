@@ -20,6 +20,7 @@
       <el-table :data="dataList" border stripe header-cell-class-name="table-th">
         <el-table-column align="center" prop="title" label="标题"></el-table-column>
         <el-table-column align="center" prop="content" label="内容"></el-table-column>
+        <el-table-column align="center" prop="person" label="责任人"></el-table-column>
         <el-table-column v-for="(item, index) in columns" :label="String(item.label)" :key="index" align="center">
           <el-table-column v-for="(item1, index1) in item.children" :key="index1" align="center"
             :label="String(item1.week)"
@@ -84,7 +85,7 @@
             <el-input :disabled="recordform.status !== 0" type="textarea" :rows="2" v-model="recordform.result" placeholder="请输入培训结果"></el-input>
           </el-form-item>
           <el-form-item label="培训资料：">
-            <div class="img">
+            <div class="img" style="display:flex;flex-wrap: wrap;">
               <template v-for="item in recordform.fileList">
                 <div @click="clickShowImg(item ? hostDomain + item : '')" v-bind:key="item" style="margin-left: 5px;">
                   <img :src="item ? hostDomain + item : ''" alt="" style="cursor:pointer">
@@ -98,6 +99,24 @@
                 :on-success="(res) => uploadSuccess(res)"
                 :before-upload="(info) => beforeAvatarUpload(info, 3)">
                 <i class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </div>
+          </el-form-item>
+          <el-form-item label="培训记录：">
+            <div>
+              <template v-for="itemnew in this.recordList">
+                <div v-bind:key="itemnew" style="margin-left: 5px;">
+                  
+                  <a class="style-pdf" target="view_window" style="text-decoration:underline;" :href="hostname + itemnew"><span style="color:blue">{{itemnew}}</span></a>
+                </div>
+              </template>
+              <el-upload
+                class="avatar-uploader"
+                :action="actionUrl"
+                :show-file-list="false"
+                :on-success="(res) => uploadSuccess2(res)"
+                :before-upload="(info) => beforePDFUpload(info)">
+                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
               </el-upload>
             </div>
           </el-form-item>
@@ -121,6 +140,9 @@
           </el-form-item>
           <el-form-item label="培训内容：" prop="content" :rules="[{ required: true, message: '请输入培训内容' }]">
             <el-input type="textarea" :rows="2" v-model="addform.content"></el-input>
+          </el-form-item>
+          <el-form-item label="责任人：" prop="person" :rules="[{ required: true, message: '请输入责任人' }]">
+            <el-input :rows="1" v-model="addform.person"></el-input>
           </el-form-item>
           <el-divider style="height:3px"></el-divider>
           <el-form-item label="安全培训周：" prop="week" :rules="[{ required: true, message: '请选择安全培训周' }]">
@@ -166,6 +188,7 @@ export default {
       addform: {},
       isEdit: false,
       recordform: {},
+      recordList:[],
       actionUrl: "/pvams/upload",
       columns: [],
       weekDataList: [],
@@ -178,7 +201,7 @@ export default {
     }
   },
   created() {
-    this.hostDomain = `${config.HOST.pvamsDomain}`;
+    this.hostname = config.HOST.pvamsDomain || "";
     this.userId = localStorage.getItem("userId");
     this.realname = localStorage.getItem("realname");
     const treeData = this.$store.state.getTreeId.treeId;
@@ -277,6 +300,7 @@ export default {
           content: data.content || "",
           week: data.week || [],
           trainId: data.trainId || "",
+          person:data.person || ""
         };
       }
     },
@@ -319,6 +343,11 @@ export default {
         ...row,
         submiter: row.submiter || this.realname,
       };
+      if(!row.fileList2){
+          this.recordList = [];
+      }else{
+        this.recordList = row.fileList2;
+      }
       this.recordform.confirmTime = row.status === 0 ? moment(new Date()).format('YYYY-MM-DD HH:mm:ss') : this.recordform.confirmTime;
       this.isRecordDialog = true;
     },
@@ -336,6 +365,19 @@ export default {
         this.$message({type: "error", message: res.message});
       }
     },
+    uploadSuccess2(res){
+      if (res.code === 200) {
+        this.$message({type: "success", message: "上传成功"});
+        const { data } = res;
+        if (this.recordform && !this.recordform.fileList2) {
+          this.recordform.fileList2 = [];
+        }
+        this.recordform.fileList2.push(data);
+        this.recordList = this.recordform.fileList2;
+      } else {
+        this.$message({type: "error", message: res.message});
+      }
+    },
     // 上传前校验
     beforeAvatarUpload(file, type) {
       if (type === 1) {
@@ -347,10 +389,17 @@ export default {
       } else if (type === 3) {
         const isLt10M = file.size / 1024 / 1024 < 10;
         const isJPGPng = file.type === 'image/jpeg' || file.type === 'image/png';
-        if (!isJPGPng) this.$message.error('上传头像图片只能是 JPG或者Png 格式!');
-        if (!isLt10M) this.$message.error('上传大小不得超过10mb!');
+        if (!isJPGPng) this.$message.error('上传图片只能是 JPG或者Png 格式!');
+        if (!isLt10M) this.$message.error('上传大小不得超过10MB!');
         return isJPGPng && isLt10M;
       }
+    },
+    beforePDFUpload(file) {
+      const isLt100M = file.size / 1024 / 1024 < 100;
+      const isPDF = file.type === 'application/pdf';
+      if (!isPDF) this.$message.error('上传记录只能是pdf格式!');
+      if (!isLt100M) this.$message.error('上传大小不得超过100MB!');
+      return isPDF && isLt100M;
     },
     clickShowImg(img) {
       const imgSrc = img.indexOf('http://') === 0 ? img : `${this.hostname}${img}`

@@ -5,16 +5,18 @@
   <div class="data-finance">
 		<div class="main-content-between">
 			<div>
-				<el-button size="small" :type="isBtnActive ? 'primary' : ''" @click="clickType(1), isBtnActive = true">按年</el-button>
-				<el-button size="small" :type="(!isBtnActive && isBtnActive !== 0) ? 'primary' : ''" @click="clickType(0), isBtnActive = false">按月</el-button>
-				<el-date-picker size="small"
-				  :style="{marginLeft: '20px'}"
-					v-model="time1"
+				<!-- <el-button size="small" :type="isBtnActive ? 'primary' : ''" @click="clickType(1), isBtnActive = true">按年</el-button>
+				<el-button size="small" :type="(!isBtnActive && isBtnActive !== 0) ? 'primary' : ''" @click="clickType(0), isBtnActive = false">按月</el-button> -->
+				<el-date-picker
+				    size="small"
+					v-model="selDate"
+					type="daterange"
+					range-separator="至"
+					value-format="yyyy-MM-dd"
+					start-placeholder="开始日期"
 					@change="changeTime"
-					type="month"
-					format="yyyy-MM"
-					value-format="yyyy-MM"
-					placeholder="选择年"></el-date-picker>
+					end-placeholder="结束日期">
+            	</el-date-picker>
 
 					<el-input type="number" :style="{width: '120px', marginLeft: '10px'}" size="small" v-model="num" placeholder="数量"></el-input>
 					<el-input :style="{width: '120px', marginLeft: '10px'}" size="small" v-model="deviceName" placeholder="名称"></el-input>
@@ -40,7 +42,7 @@
     </div>
 		<div class="table" :style="{marginTop: '20px'}">
 			<el-table :default-sort="{prop: '', order: 'descending'}" header-cell-class-name="table-th" :data="tableList1" border stripe>
-        <el-table-column align="center" width="160px" prop="statName" label="日期"></el-table-column>
+        		<el-table-column align="center" fixed="left" width="160px" prop="statName" label="日期"></el-table-column>
 				<el-table-column
 					v-for="(item, index) in columns" :key="index" align="center" :label="item.dayName"
 					:width="type === 1 ? '' : '100px'"
@@ -60,17 +62,17 @@
 			</el-row>
 			
 			<el-table
-				height="300"
+				height="600"
 				header-cell-class-name="table-th"
 				:data="tableList2" border stripe>
-				<el-table-column align="center" width="160px" prop="deviceName" label="设备名称"></el-table-column>
+				<el-table-column fixed="left" align="center" width="160px" prop="deviceName" label="设备名称"></el-table-column>
 				<el-table-column
 					:sortable="true"
 					v-for="(item, index) in columns" :key="index" align="center" :label="item.dayName"
 					:sort-method="(v1, v2) => sortByDate(v1, v2, item)"
 					:prop="item.prop">
 					<template slot-scope="scope">
-						<span>{{scope.row.stats && scope.row.stats.length !==0 && scope.row.stats[item.day] && scope.row.stats[item.day].val }}</span>
+						<span>{{scope.row.stats && scope.row.stats.length !==0 && scope.row.stats[item.day] }}</span>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -102,7 +104,9 @@ export default {
   data() {
     return {
 			month: "",
-			time1: "",
+			selDate:"",
+			startDate: "",
+			endDate: "",
 			num: 10,
 			deviceName: '',
 			time2: "",
@@ -156,7 +160,10 @@ export default {
 			this.query();
 		},
 		changeTime(v) {
-			this.time1 = v;
+			if(v){
+				this.startDate = v[0];
+				this.endDate = v[1];
+			}
 			this.query();
 		},
 		clickQuery() {
@@ -177,7 +184,8 @@ export default {
 				type: this.type || 0,
 				num: this.num,
 				deviceName: this.deviceName,
-				val: this.time1,
+				startDate: this.startDate,
+				endDate:this.endDate
 			};
 			const { data: { code, data: { resultData = [], resultDataNew: { hourData = [], powerData = [], deviceList = [] } = {} } = {} } = {} } = await this.axios("/pvams/data/getDeviceStat", { params });
 			if (code === 200) {
@@ -202,7 +210,8 @@ export default {
 				statType: this.statType,
 				stationId: this.stationId,
 				type: this.type || 0,
-				val: this.time1,
+				startDate: this.startDate,
+				endDate:this.endDate
 			};
 			const { data: { code, data: { resultData = [], dateLen = 0 } = {} } } = await this.axios("/pvams/data/getStatData", { params });
       this.loadingClose();
@@ -228,7 +237,8 @@ export default {
 				stationId: this.stationId,
 				statType: this.statType,
 				type: this.type || 0,
-				val: this.time1,
+				startDate: this.startDate,
+				endDate:this.endDate
 			};
 			const { data: { code, data: { resultData = [], page: { count = 0 } = {} } = {} } } = await this.axios("/pvams/data/getDeviceStatDetail", { params });
       this.loadingClose();

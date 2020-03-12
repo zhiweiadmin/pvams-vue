@@ -26,7 +26,7 @@
     </div>
     <div class="main" v-show="item" v-for="(item, index) in mainList" :key="index">
       <p class="title" v-if="item">{{item.title || ""}}</p>
-      <el-form v-if="item" :model="item" label-width="120px" ref="form">
+      <el-form v-if="item" :model="item" label-width="150px" ref="form">
         <el-col class="col" :span="8" v-for="(item1, index1) in item.formList" :key="index1">
           <el-form-item v-if="item1.show" class="item" :label="`${item1.label}：`">
             <span class="form-value">{{item1.value || ""}}</span>
@@ -52,9 +52,9 @@
           </el-form-item>
         </el-col> -->
         <el-col :span="24" class="col">
-          <el-form-item v-if="item.title === '资产图片'" label-width="0">
+          <el-form-item v-if="item.title === '资产影像信息'" label-width="0">
             <el-row>
-              <el-col :span="24" class="col" v-for="(assetsImgs, index1) in item.images" :key="index1">
+              <el-col :span="24" class="col" v-for="(assetsImgs, idx) in item.images" :key="idx">
                 <el-form-item :label="`${assetsImgs.name}：`">
                     <div class="imgs" style="display:flex;flex-flow:wrap;">
                     <!-- <a class="divimg" :href="itemimg.fileUrl" target="_blank" v-for="(itemimg, indeximg) in assetsImgs.imgs" :key="indeximg">
@@ -93,7 +93,7 @@
                     </el-dialog> -->
                     <el-upload
                         name="file"
-                        :action="`/pvams/station/uploadAccessPointFile/${stationId}/${index1+1}`"
+                        :action="`/pvams/station/uploadAccessPointFile/${stationId}/${idx}`"
                         list-type="picture"
                         :on-preview="handlePictureCardPreview"
                         :on-remove="handleRemove"
@@ -275,14 +275,14 @@ export default {
             // { label: "发电站地址", value: stationInfo.address, show: true },
             // { label: "容配比", value: stationInfo.scale, show: true },
             { label: "电站类型", value: stationInfo.stationTypeName, show: true },
-            { label: "装机容量", value: stationInfo.installedCapacity, show: true },
-            { label: "并网容量", value: stationInfo.gridCapacity, show: true },
+            { label: "装机容量(MW)", value: stationInfo.installedCapacity, show: true },
+            { label: "并网容量(MW)", value: stationInfo.gridCapacity, show: true },
 
-            { label: "电站装机功率", value: stationInfo.installedPower, show: true }, // 1
+            { label: "电站装机功率", value: stationInfo.installedPower, show: false }, // 1
             { label: "并网时间", value: stationInfo.gridTime, show: true }, // 2
             { label: "项目倾角", value: stationInfo.projectAngle, show: true }, // 3
             { label: "阵列间距", value: stationInfo.arraySpace, show: true }, // 4
-            { label: "并网电压等级", value: stationInfo.gridPowerLevel, show: flag1 }, // 5
+            { label: "并网电压等级(KV)", value: stationInfo.gridPowerLevel, show: flag1 }, // 5
             { label: "并网点数量", value: stationInfo.gridNum, show: flag1 }, // 6
             { label: "电站容配比", value: stationInfo.scale, show: true }, // 7
 
@@ -303,7 +303,7 @@ export default {
             { label: "屋顶类型", value: stationInfo.roofType, show: ['6', '8'].includes(stationType) }, // 22
             { label: "有/无采光带", value: stationInfo.isDaylight, show: ['6', '8'].includes(stationType) }, // 23
             { label: "上屋面条件", value: stationInfo.upCondition, show: ['6', '8'].includes(stationType) }, // 24
-            { label: "屋顶数量", value: stationInfo.roofNum, show: ['6', '8'].includes(stationType) }, // 25
+            { label: "屋顶数量(座)", value: stationInfo.roofNum, show: ['6', '8'].includes(stationType) }, // 25
             { label: "分布点数量", value: stationInfo.distributionPointNum, show: ['6', '7', '8'].includes(stationType) }, // 26
             { label: "清洗水源", value: stationInfo.clearWaterSource, show: ['1', '2', '3', '4', '5'].includes(stationType) }, // 27
             { label: "清洗水源接入", value: stationInfo.clearWaterSourceAccess, show: ['6', '8'].includes(stationType) }, // 28
@@ -352,7 +352,7 @@ export default {
         let objAssetsImgs = {};
         if (assetsImgs) {
           console.log(assetsImgs);
-          objAssetsImgs.title = "资产图片";
+          objAssetsImgs.title = "资产影像信息";
           Object.keys(assetsImgs).forEach((v) => {
             if (assetsImgs[v] && assetsImgs[v].length !== 0) {
               assetsImgs[v].forEach((d) => {
@@ -362,18 +362,21 @@ export default {
             }
           });
           let images = [
-            { name: '支架基础', imgs: assetsImgs.TYPE1 },
-            { name: '组件', imgs: assetsImgs.TYPE2 },
-            { name: '汇流箱', imgs: assetsImgs.TYPE3 },
-            { name: '逆变器', imgs: assetsImgs.TYPE4 },
-            { name: '变压器', imgs: assetsImgs.TYPE5 },
-            { name: '高压开关', imgs: assetsImgs.TYPE6 },
-            { name: '并网柜', imgs: assetsImgs.TYPE7 },
-            { name: '并网表', imgs: assetsImgs.TYPE8 },
-            { name: '防雷接地装置', imgs: assetsImgs.TYPE9 },
-            { name: 'SVG', imgs: assetsImgs.TYPE10 },
-            { name: '接地变压器', imgs: assetsImgs.TYPE11 },
-            { name: '电容柜', imgs: assetsImgs.TYPE12 },
+            { name: '电站整体图', imgs: assetsImgs.TYPE0,idx:0 },
+            { name: '支架基础', imgs: assetsImgs.TYPE1,idx:1 },
+            { name: '组串', imgs: assetsImgs.TYPE2 ,idx:2},
+            { name: '汇流箱', imgs: assetsImgs.TYPE3 ,idx:3},
+            { name: '逆变器', imgs: assetsImgs.TYPE4 ,idx:4},
+            { name: '变压器', imgs: assetsImgs.TYPE5 ,idx:5},
+            { name: '高压开关', imgs: assetsImgs.TYPE6 ,idx:6},
+            { name: '电压互感器(PT柜)', imgs: assetsImgs.TYPE13,idx:13 },
+            { name: '并网柜', imgs: assetsImgs.TYPE7 ,idx:7},
+            { name: '并网表', imgs: assetsImgs.TYPE8 ,idx:8},
+            { name: '防雷接地装置', imgs: assetsImgs.TYPE9 ,idx:9},
+            { name: 'SVG', imgs: assetsImgs.TYPE10 ,idx:10},
+            { name: '接地变压器', imgs: assetsImgs.TYPE11 ,idx:11},
+            { name: '电容柜', imgs: assetsImgs.TYPE12 ,idx:12},
+            { name: '辅助设施', imgs: assetsImgs.TYPE14 ,idx:14}
           ];
           objAssetsImgs.images = images;
         }
@@ -387,7 +390,7 @@ export default {
           }
           girdInfo.type = 1;
         }
-        this.mainList = [baseInfo, stationInfo, buildInfo, constructInfo, superviseInfo, girdInfo, objAssetsImgs];
+        this.mainList = [baseInfo, stationInfo, constructInfo,buildInfo, superviseInfo, girdInfo, objAssetsImgs];
       }
     },
     clickClose() {

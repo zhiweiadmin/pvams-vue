@@ -182,6 +182,16 @@ export default {
       tableList: [],
       columns: [
         {
+          label: "责任人",
+          width: "",
+          prop: "person",
+        },
+        {
+          label: "资产编号",
+          width: "",
+          prop: "assetNum",
+        },
+        {
           label: "器材名称",
           width: "",
           prop: "fireName",
@@ -202,7 +212,7 @@ export default {
           prop: "type",
         },
         {
-          label: "本次点检日期",
+          label: "上次点检日期",
           width: "160px",
           prop: "checkTime",
         },

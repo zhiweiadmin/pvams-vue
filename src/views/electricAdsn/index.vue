@@ -357,9 +357,9 @@ export default {
           barGap: 0,
           yAxisIndex: 1,
           data: itemData.shijidengxiao,
-          color: "#7687E8",
+          color: "red",
           lineStyle: {
-            color: "#7687E8",
+            color: "red",
           },
         },
         {
@@ -367,9 +367,9 @@ export default {
           type: "line",
           yAxisIndex: 1,
           data: itemData.fuzhaodengxiao,
-          color: "#34D4F1",
+          color: "green",
           lineStyle: {
-            color: "#34D4F1",
+            color: "green",
           },
         },
         {
@@ -377,9 +377,9 @@ export default {
           type: "line",
           yAxisIndex: 1,
           data: itemData.lilundengxiao,
-          color: "#3A4B68",
+          color: "orange",
           lineStyle: {
-            color: "#3A4B68",
+            color: "orange",
           },
         },
         ] : [
@@ -400,19 +400,19 @@ export default {
             type: "line",
             yAxisIndex: 1,
             data: itemData.shijidengxiao,
-            color: "#FC7A5C",
+            color: "green",
             lineStyle: {
-              color: "#FC7A5C",
+              color: "green",
             },
           },
           {
             name: "理论等效小时数",
             type: "line",
             yAxisIndex: 1,
-            color: "#263849",
+            color: "blue",
             data: itemData.lilundengxiao,
             lineStyle: {
-              color: "#263849",
+              color: "blue",
             },
           },
         ],
