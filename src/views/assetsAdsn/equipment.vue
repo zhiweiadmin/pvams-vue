@@ -25,6 +25,25 @@
         </el-upload>
       </el-col>
     </el-row>
+
+    <el-row :gutter="20">
+          
+      <el-form :model="searchform" size="small" ref="searchform" label-width="80px">
+      <el-col :span="5">
+        <el-form-item label="设备名称:">
+          <el-select clearable @change="changeQuery" v-model="searchform.devicename" placeholder="请选择">
+            <el-option v-for="(item, index) in deviceNameList"
+              :key="index"
+              :label="item.device_name"
+              :value="item.device_name">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+
+    </el-form>
+    </el-row>
+
     <div class="table" :style="{margin: '20px 0'}">
       <el-table header-cell-class-name="table-th" :data="tableList" border stripe>
         <el-table-column type="index" width="50px" align="center" label="序号"></el-table-column>
@@ -58,6 +77,7 @@ export default {
   mixins: [jurisdiction],
   data() {
     return {
+      searchform: {},
       tableList: [1],
       columns: [
         {
@@ -67,10 +87,6 @@ export default {
         {
           prop: "number",
           label: "数量",
-        },
-        {
-          prop: "type",
-          label: "类型",
         },
         {
           prop: "model",
@@ -111,6 +127,7 @@ export default {
       stationId: "",
       total: 0,
       hostname: "",
+      deviceNameList:[]
     }
   },
   created() {
@@ -118,15 +135,24 @@ export default {
     const treeData = this.$store.state.getTreeId.treeId;
     if (treeData.id && treeData.id.includes("s")) {
       this.stationId = treeData.id.slice(1, treeData.id.length);
-      if (this.stationId) this.getTableList();
+      if (this.stationId) {
+        this.getDeviceName();
+        this.getTableList();
+      }
     }
+    
+    
   },
   watch: {
     getStateData(v) {
+      this.searchform = {};
       const treeData = this.$store.state.getTreeId.treeId;
       if (treeData.id && treeData.id.includes("s")) {
         this.stationId = treeData.id.slice(1, treeData.id.length);
-        if (this.stationId) this.getTableList();
+        if (this.stationId){
+          this.getDeviceName();
+          this.getTableList();
+        } 
       }
     },
   },
@@ -139,6 +165,7 @@ export default {
     async getTableList(pageNo) {
       this.loadingOpen();
       const params = {
+        ...this.searchform,
         stationId: this.stationId,
         pageNo,
         pageSize: 10
@@ -166,6 +193,25 @@ export default {
       const isLt20M = file.size / 1024 / 1024 < 20;
       if (!isLt20M) this.$message.error('上传文件大小不得超过20mb!');
       return isLt20M;
+    },
+    changeQuery() {
+      this.getTableList(1);
+    },
+    getDeviceName() {
+      // const { data: { data = [], code } = {} } = await this.axios(`/pvams/station/getStationDeviceName/${this.stationId}`);
+      // if (code === 200) {
+      //   this.deviceNameList = data;
+      //   this.searchform = {};
+      // }
+
+      axios.get(`/pvams/station/getStationDeviceName/${this.stationId}`)
+	      .then( (response) => {
+          this.deviceNameList = response.data.data;
+          this.searchform = {};
+      })
+      .catch( (error) => {
+        console.log(error);
+      });
     },
   },
 }
